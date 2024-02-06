@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -18,10 +16,11 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
     // Start is called before the first frame update
     void Start()
     {
+        GameObject.Find("Canvas").GetComponent<UIManager>().InitializeBestScoreText();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -68,9 +67,20 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    private void SetBestScore()
+    {
+        int bestScore = PlayerPrefs.GetInt("bestScore", 0);
+        if (m_Points > bestScore)
+        {
+            PlayerPrefs.SetInt("bestScore", m_Points);
+            PlayerPrefs.SetString("bestScoreUsername", PlayerPrefs.GetString("currentUsername"));
+        }
+    }
+
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        SetBestScore();
     }
 }
